@@ -2,7 +2,7 @@ import logo from "./logo.svg";
 import "./App.css";
 
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"; // Cambié Map por MapContainer
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css"; // Importar los estilos de Leaflet
 import axios from "axios";
 import "leaflet/dist/leaflet.css"; // Importar los estilos de Leaflet
@@ -21,34 +21,42 @@ function App() {
     zoom: 13,
   });
 
+  const [propiedades, setpropiedades] = useState([]);
+
   const obtenerDatos = async () => {
     try {
-      const respuesta = await axios.post(
-        "https://temperas-api.herokuapp.com/temperas",
-        {
-          query:
-            "{ propiedades { id nombre_estacion geometria { tipo_geometria latitud longitud } } }",
-        }
-      );
+      const respuesta = await axios.post("http://52.90.196.224:80/", {
+        query:
+          "{ propiedades { id nombre_estacion geometria { tipo_geometria latitud longitud } } }",
+      });
 
-      //depurar las respuestas
       console.log(respuesta.data);
+      setpropiedades(respuesta.data.data.propiedades);
     } catch (error) {
       console.error(error);
     }
   };
+
+  useEffect(() => {
+    obtenerDatos();
+  }, []);
 
   return (
     <div className="h-screen bg-gray-100 ">
       <h1 className="font-bold text-5xl text-center">Temperas de la región</h1>
       <div className="flex space-x-3 p-3 ">
         <h2 className="b">Buscador</h2>
-        <select name="select">
-          <option value="value1">Value 1</option>
-          <option value="value2" selected>
+        <select
+          onChange={(a) => {
+            console.log(a.target.value);
+          }}
+          name="select"
+        >
+          <option value="valkey">Value 1</option>
+          <option value="key ue2" selected>
             Value 2
           </option>
-          <option value="value3">Value 3</option>
+          <option value="key">Value 3</option>
         </select>
       </div>
 
