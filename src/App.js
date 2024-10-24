@@ -18,6 +18,7 @@ function App() {
     zoom: 13,
   });
 
+  const [endpoint, setEndpoint] = useState("http://52.90.196.224:80/"); // Estado para el endpoint
   const [propiedades, setPropiedades] = useState([]);
   const [fechas, setFechas] = useState([]);
   const [temperaturas, setTemperaturas] = useState([]);
@@ -25,7 +26,7 @@ function App() {
 
   const obtenerDatos = async () => {
     try {
-      const respuesta = await axios.post("http://52.90.196.224:80/", {
+      const respuesta = await axios.post(endpoint, {
         query:
           "{ propiedades { id nombre_estacion geometria { tipo_geometria latitud longitud } } }",
       });
@@ -38,7 +39,7 @@ function App() {
 
   const obtenerFechas = async () => {
     try {
-      const respuesta = await axios.post("http://52.90.196.224:80/", {
+      const respuesta = await axios.post(endpoint, {
         query: "{ fechas { fecha_id fecha } }",
       });
 
@@ -50,7 +51,7 @@ function App() {
 
   const obtenerTemperaturas = async (fecha, propiedadId) => {
     try {
-      const respuesta = await axios.post("http://52.90.196.224:80/", {
+      const respuesta = await axios.post(endpoint, {
         query: `{
           temperaturasPorFechaYPropiedad(fecha: "${fecha}", propiedadId: ${propiedadId}) {
             id
@@ -85,13 +86,24 @@ function App() {
   useEffect(() => {
     obtenerDatos();
     obtenerFechas();
-  }, []);
+  }, [endpoint]); // Reacciona al cambiar el endpoint
 
   return (
     <div className="h-screen bg-gray-100 ">
       <h1 className="font-bold text-5xl text-center">
         Temperaturas de la región
       </h1>
+
+      {/* Input para modificar el endpoint */}
+      <div className="flex space-x-3 p-3">
+        <h2>Endpoint</h2>
+        <input
+          type="text"
+          value={endpoint}
+          onChange={(e) => setEndpoint(e.target.value)}
+          placeholder="Ingresa el endpoint"
+        />
+      </div>
 
       <div className="flex space-x-3 p-3">
         <h2>Buscador</h2>
@@ -149,3 +161,4 @@ function App() {
 }
 
 export default App;
+
