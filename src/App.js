@@ -22,10 +22,11 @@ function App() {
   const [fechas, setFechas] = useState([]);
   const [temperaturas, setTemperaturas] = useState([]);
   const [fechaSeleccionada, setFechaSeleccionada] = useState("");
+  const [EndPoit, setEndPoit] = useState("http://52.90.196.224:80");
 
   const obtenerDatos = async () => {
     try {
-      const respuesta = await axios.post("http://52.90.196.224:80/", {
+      const respuesta = await axios.post(EndPoit, {
         query:
           "{ propiedades { id nombre_estacion geometria { tipo_geometria latitud longitud } } }",
       });
@@ -38,7 +39,7 @@ function App() {
 
   const obtenerFechas = async () => {
     try {
-      const respuesta = await axios.post("http://52.90.196.224:80/", {
+      const respuesta = await axios.post(EndPoit, {
         query: "{ fechas { fecha_id fecha } }",
       });
 
@@ -50,7 +51,7 @@ function App() {
 
   const obtenerTemperaturas = async (fecha, propiedadId) => {
     try {
-      const respuesta = await axios.post("http://52.90.196.224:80/", {
+      const respuesta = await axios.post(EndPoit, {
         query: `{
           temperaturasPorFechaYPropiedad(fecha: "${fecha}", propiedadId: ${propiedadId}) {
             id
@@ -81,11 +82,6 @@ function App() {
     const temperaturasPorPropiedad = await Promise.all(temperaturasPromises);
     setTemperaturas(temperaturasPorPropiedad.flat());
   };
-
-  useEffect(() => {
-    obtenerDatos();
-    obtenerFechas();
-  }, []);
 
   return (
     <div className="h-screen bg-gray-100 ">
@@ -144,6 +140,24 @@ function App() {
           );
         })}
       </MapContainer>
+      <div className="flex flex-row items-center space-x-5 p-3">
+        <h1>EndPoit:</h1>
+        <input
+          className=""
+          type="text"
+          value={EndPoit}
+          onChange={(e) => setEndPoit(e.target.value)}
+        />
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+          onClick={() => {
+            obtenerDatos();
+            obtenerFechas();
+          }}
+        >
+          Conectar
+        </button>
+      </div>
     </div>
   );
 }
